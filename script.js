@@ -64,7 +64,7 @@ canvas.addEventListener("mousemove",function(event){
     //drawCircle();
     //drawCircleAtMouse();
     //ParticlesArray.push(new Particle()); //makes a trail of particles at mouse movement
-    for(let i=0;i<5;i++){//makes us spawn 10 particles per movement
+    for(let i=0;i<4;i++){//makes us spawn i particles per movement
         ParticlesArray.push(new Particle());//makes a new particle spawn when we movement
     }
 })
@@ -141,6 +141,28 @@ function handleParticles(){//handles the updating and drawing of particles
     for(let i=0;i<ParticlesArray.length;i++){
         ParticlesArray[i].update();
         ParticlesArray[i].draw();
+
+        //for adding constellation effect between all particles, iterate over the array
+        //and get the distance between particle i and particle j via pythogoras theorem
+        for(let j=i;j<ParticlesArray.length;j++){
+            const distance_x=ParticlesArray[i].x-ParticlesArray[j].x;
+            const distance_y=ParticlesArray[i].y-ParticlesArray[j].y;
+            const distance_between=Math.sqrt((distance_x*distance_x)+(distance_y*distance_y));
+            //now use the distance variable to set a limit for the particles drawing the constellation to
+            if(distance_between<50){//if less than 100 pixels
+                ctx.beginPath;//begin drawing
+                //define the stroke color , else itll default to black
+                ctx.strokeStyle=ParticlesArray[i].color;
+                //to make the line width decrease as particle size decreases do this
+                //ctx.lineWidth=ParticlesArray[i].size;
+                ctx.lineWidth=0.2;
+                ctx.moveTo(ParticlesArray[i].x,ParticlesArray[i].y);//start from particle i
+                ctx.lineTo(ParticlesArray[j].x,ParticlesArray[j].y);//go to particle j
+                ctx.stroke();//draw the line
+                ctx.closePath;
+            }
+        }
+        //if statement added after for so that it calculates distance before removing the particle
         if(ParticlesArray[i].size<=0.3){//remove particles smaller than this size
             ParticlesArray.splice(i,1)// we are deleting i'th element, and the
             //number to delete is 1
@@ -150,7 +172,7 @@ function handleParticles(){//handles the updating and drawing of particles
 }
 
 function animate(){
-    //ctx.clearRect(0,0,canvas.width,canvas.height); //clears old animation
+    ctx.clearRect(0,0,canvas.width,canvas.height); //clears old animation comment to leave trails
 
     //drawCircle();//uncoment this and the function to draw a
     //constant circle at mouse location
@@ -162,13 +184,13 @@ function animate(){
     ctx.fillRect(0,0,canvas.width,canvas.height);
     */
 
-    ctx.fillStyle="rgba(0,0,0,0.02)"; //adds fade trail by reducing the opacity
+    //ctx.fillStyle="rgba(0,0,0,0.02)"; //adds fade trail by reducing the opacity
     //lowering opacity reduces the fade trail
-    ctx.fillRect(0,0,canvas.width,canvas.height);
+    //ctx.fillRect(0,0,canvas.width,canvas.height);
 
     //hue++; //increase hue per animation the higher it is the faster we cycle through
     //the color spectrum
-    hue+=5;
+    hue+=2;
 
     handleParticles();
 
