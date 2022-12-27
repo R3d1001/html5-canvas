@@ -5,6 +5,17 @@ const ctx=canvas.getContext("2d");
 canvas.width=window.innerWidth;
 canvas.height=window.innerHeight;
 
+//for adding a gradient, from top left(0,0) to bottom right(canvas.width,canvas.height)
+let gradient=ctx.createLinearGradient(0,0,canvas.width,canvas.height);
+//let gradient=ctx.createRadialGradient(canvas.width/2,canvas.height/2,150,canvas.width/2,canvas.height/2,300);//for making a circular variation of the gradient, we are telling it to make it at the center of the screen ie. canvas.width/2,canvas.height/2, and start from 150 till 300 radius
+gradient.addColorStop(0,"red");//a percentage from 0 to 1
+gradient.addColorStop(0.143,"orange");// means at 20%
+gradient.addColorStop(0.286,"yellow");
+gradient.addColorStop(0.429,"green");
+gradient.addColorStop(0.572,"blue");
+gradient.addColorStop(0.715,"indigo");
+gradient.addColorStop(1,"violet");
+
 class Symbol{
     //for making the individual symbols which will rain down and managing them
     constructor(x,y,fontSize,canvasHeight){
@@ -67,6 +78,13 @@ class Effect{
             this.symbols[i]=new Symbol(i,0,this.fontSize,this.canvasHeight);
         }
     }
+    resize(width,height){//for making a responsive resize
+        this.canvasHeight=height;
+        this.canvasWidth=width;
+        this.columns=this.canvasWidth/this.fontSize;
+        this.symbols=[];
+        this.#initialize();
+    }
 }
 
 const effect=new Effect(canvas.width,canvas.height);
@@ -90,7 +108,9 @@ function animate(timeStamp){
         ctx.fillStyle="rgba(0,0,0,0.05)";
         ctx.textAlign="center";//makes the text more even as there are japanese characters
         ctx.fillRect(0,0,canvas.width,canvas.height);
-        ctx.fillStyle="#0aff0a";//set shade of the text
+
+        //ctx.fillStyle="#0aff0a";//set shade of the text
+        ctx.fillStyle=gradient;//makes the shapes on those gradient specified positions take the colors we specified
         //monospace characters occupy the same ammount of horizontal space
         ctx.font=effect.fontSize+"px monospace";
         //call draw method of each symbol
@@ -106,3 +126,19 @@ function animate(timeStamp){
     requestAnimationFrame(animate);
 }
 animate(0);
+window.addEventListener("resize",function(){
+    //for automatic resizing
+    canvas.width=window.innerWidth;
+    canvas.height=window.innerHeight;
+    effect.resize(canvas.width,canvas.height);
+
+    //for resizing the gradient as window size changes, no need to redeclare gradient with using "let" keyword
+    gradient=ctx.createLinearGradient(0,0,canvas.width,canvas.height);
+    gradient.addColorStop(0,"red");
+    gradient.addColorStop(0.2,"orange");
+    gradient.addColorStop(0.35,"yellow");
+    gradient.addColorStop(0.55,"green");
+    gradient.addColorStop(0.7,"blue");
+    gradient.addColorStop(0.85,"indigo");
+    gradient.addColorStop(1,"violet");
+});
