@@ -45,8 +45,8 @@ window.addEventListener("load",function(){//the code runs once all assets(html,s
    //size is calculated by a ternary operator in the form
    //condition to evaluate ? run this if true : run this if false;
    let size=canvas.width<canvas.height ? canvas.width*0.3:canvas.height*0.3;
-   const maxLevel=5;//how many max levels we want to run in our function keeping it const so that it does not get randomized
-   const branches=2;//the number of branches we want from the main branch
+   let maxLevel=5;//how many max levels we want to run in our function keeping it const so that it does not get randomized
+   let branches=2;//the number of branches we want from the main branch
    let sides=5;
    let spread=0.5;//the angle spread of each branch
    let scale=0.5;//tells the scale we want each subbranch to change by
@@ -58,6 +58,48 @@ window.addEventListener("load",function(){//the code runs once all assets(html,s
 
    const randomButton=document.getElementById("randomizeButton");//get our randomizing button
    const resetButton=document.getElementById("resetButton");//get our resetting button
+
+   let octopusFractal=false;
+   /*TODO
+   const octopusFractalEnabler=this.document.getElementById("octopusFractal");//get the octopus fractal enabling button
+   octopusFractalEnabler.addEventListener("change",function(){
+    octopusFractal=!octopusFractal;
+    drawFractal();
+   })
+   */
+
+   const slider_branches=this.document.getElementById("branches");
+   const label_branches=this.document.querySelector("[for='branches']");
+   slider_branches.addEventListener("change",function(e){
+    branches=e.target.value;
+    updateSliders();
+    drawFractal();
+   })
+
+   const slider_maxLevel=this.document.getElementById("maxLevel");
+   const label_maxLevel=this.document.querySelector("[for='maxLevel']");
+   slider_maxLevel.addEventListener("change",function(e){
+    maxLevel=e.target.value;
+    updateSliders();
+    drawFractal();
+   })
+
+   const slider_lineWidth=this.document.getElementById("linewidth");
+   const label_lineWidth=this.document.querySelector("[for='linewidth']");
+   slider_lineWidth.addEventListener("change",function(e){
+    lineWidth=e.target.value;
+    updateSliders();
+    drawFractal();
+   })
+
+
+   const slider_color=this.document.getElementById("color");
+   const label_color=this.document.querySelector("[for='color']");
+   slider_color.addEventListener("change",function(e){
+    color="hsl("+e.target.value+",100%,50%)";
+    updateSliders();
+    drawFractal();
+   })
 
    const slider_Spread=this.document.getElementById("spread");//get our spreads id
    const label_Slider=document.querySelector("[for='spread']");//get our label which we made for spread
@@ -96,40 +138,52 @@ window.addEventListener("load",function(){//the code runs once all assets(html,s
     ctx.stroke();
 
     for(let i=0;i<branches;i++){
+        if(octopusFractal){
+            ctx.rotate(Math.PI*2)/sides;
+            drawBranch(0);
+        }
+        else{
+            ctx.save();//by saving here we can redo for the other side too
+            //the settings which changes our next lines
+            ctx.translate(size-(size/branches)*i,0);//we tell it to translate by this ammount
+            //if we want them move move along and grow from the other end, we do ctx.translate(size-(size/branches)*i,0); and remove size- for vice versa
+            ctx.scale(scale,scale)
 
-        ctx.save();//by saving here we can redo for the other side too
-        //the settings which changes our next lines
-        ctx.translate(size-(size/branches)*i,0);//we tell it to translate by this ammount
-        //if we want them move move along and grow from the other end, we do ctx.translate(size-(size/branches)*i,0); and remove size- for vice versa
-        ctx.scale(scale,scale)
+            ctx.save();
+            ctx.rotate(spread);
+            //so that it calls itself incrementingly recursively
+            drawBranch(level+1);
+            ctx.restore();
 
-        ctx.save();
-        ctx.rotate(spread);
-        //so that it calls itself incrementingly recursively
-        drawBranch(level+1);
-        ctx.restore();
+            //commenting out from here
+            ctx.save();
+            //by changing spread to -spread, we do for the other side too
+            //ctx.save();//by saving here we can redo for the other side too
+            //the settings which changes our next lines
+            ctx.rotate(-spread);
+            //till here will cause a single branch to be made and we can make fractal hooks this way
 
-        ctx.save();
-        //by changing spread to -spread, we do for the other side too
-        //ctx.save();//by saving here we can redo for the other side too
-        //the settings which changes our next lines
-        ctx.rotate(-spread);
-
-        //so that it calls itself incrementingly recursively
-        drawBranch(level+1);
-        ctx.restore();
-        ctx.restore();
+            //so that it calls itself incrementingly recursively
+            drawBranch(level+1);
+            ctx.restore();
+            ctx.restore();
+        }
     }
+    //causes circles to be drawn as well. we can remove this from here and add to drawfractal() to reduce computation
+    ctx.beginPath();
+    ctx.arc(0,size,size*0.1,0,Math.PI*2);
+    ctx.fill();
 
    }
 
-   lineWidth=Math.floor(Math.random()*10)+10;
+
    function drawFractal(){
     ctx.clearRect(0,0,canvas.width,canvas.height);//to clear the previous fractal
     ctx.save();
 
     ctx.lineWidth=lineWidth;
     ctx.strokeStyle=color;//the color we want it
+    ctx.fillStyle=color;//so that our fills are also of same color
     ctx.translate(canvas.width/2,canvas.height/2);
     ctx.scale(1,1);
     ctx.rotate(0);
@@ -144,10 +198,10 @@ window.addEventListener("load",function(){//the code runs once all assets(html,s
 
    //our randomize button changes the following settings
    function randomizeFractal(){
-    lineWidth=Math.floor(Math.random()*10)+10;
-    sides=Math.floor(Math.random()*9)+2;//random value between 2 and 9, flooring so that we get an integer value
+    lineWidth=Math.floor(Math.random()*30)+1;
+    sides=Math.floor(Math.random()*7)+2;//random value between 2 and 9, flooring so that we get an integer value
     spread=(Math.random()*2.9)+0.1;//random value between 0.1 and 3
-    scale=(Math.random()*0.2)+0.4;;//random value between 0.4 and 0.6
+    scale=(Math.random()*0.4)+0.4;;//random value between 0.4 and 0.8
     color="hsl("+Math.random()*360+",100%,50%)";
 
     drawFractal();//draw the updated fractal
@@ -167,6 +221,8 @@ window.addEventListener("load",function(){//the code runs once all assets(html,s
     scale=0.5;
     color="hsl("+Math.random()*360+",100%,50%)";
     lineWidth=15;
+    branches=2;
+    maxLevel=5;
    }
    resetButton.addEventListener("click",function(){
     resetFractal();
@@ -181,6 +237,26 @@ window.addEventListener("load",function(){//the code runs once all assets(html,s
     label_Slider.innerText="Spread: "+Number(spread).toFixed(2);//tells us to bring up to 2 decimal places when showing, we use Number() to convert the stirng type to a number
     slider_Sides.value=sides;
     label_Sides.innerText="Sides : "+sides;
+    slider_lineWidth.value=lineWidth;
+    label_lineWidth.innerText="lineWidth : "+Number(lineWidth);
+    slider_maxLevel.value=maxLevel;
+    label_maxLevel.innerText="MaxLevel : "+maxLevel;
+    slider_branches.value=branches;
+    label_branches.innerText="Branches : "+branches;
    }
    updateSliders();//so that slider values and labels are updated on page load
+
+   window.addEventListener("resize",function(){//so that it resizes as window size changes
+    canvas.width=window.innerWidth;
+    canvas.height=this.window.innerHeight;
+    //to adjust for widescreen and tallscreen
+    size=canvas.width<canvas.height?canvas.width*0.3:canvas.height*0.3;
+
+    //as shadows are lost when resizing
+    ctx.shadowColor="rgba(0,0,0,0.7)";
+    ctx.shadowOffsetX=10;
+    ctx.shadowOffsetY=5;
+    ctx.shadowBlur=10
+    drawFractal();
+   })
 });

@@ -21,6 +21,35 @@
             step="1" value="1">
             <label for="sides">Sides</label>
         </div>
+        <div>
+            <input id="color" type="range" min="0" max="360"
+            step="1" value="1">
+            <label for="color">Color</label>
+        </div>
+        <div>
+            <input id="linewidth" type="range" min="1" max="30"
+            step="1" value="15">
+            <label for="linewidth">lineWidth</label>
+        </div>
+        <div>
+            <input id="branches" type="range" min="1" max="3"
+            step="1" value="2">
+            <label for="branches">branches</label>
+        </div>
+        <div>
+            <input id="maxLevel" type="range" min="1" max="6"
+            step="1" value="5">
+            <label for="maxLevel">maxLevel</label>
+        </div>
+        <!-- TODO
+        <div>
+            <input type="checkbox" id="octopusFractal">
+            <label for="octopusFractal" class="switch">
+                <span class="slider round"></span>
+                octopusFractal
+            </label>
+        </div>
+        -->
         <button id="resetButton">Reset</button>
     </div>
     <script src="script.js"></script>
