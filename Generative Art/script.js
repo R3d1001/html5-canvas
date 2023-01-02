@@ -203,7 +203,8 @@ window.addEventListener("load",function(){//the code runs once all assets(html,s
     spread=(Math.random()*2.9)+0.1;//random value between 0.1 and 3
     scale=(Math.random()*0.4)+0.4;;//random value between 0.4 and 0.8
     color="hsl("+Math.random()*360+",100%,50%)";
-
+    branches=Math.floor(Math.random()*2)+1;
+    maxLevel=Math.floor(Math.random()*5)+1;
     drawFractal();//draw the updated fractal
    }
    //our random buttons click executed functions
@@ -211,7 +212,6 @@ window.addEventListener("load",function(){//the code runs once all assets(html,s
     randomizeFractal();
     updateSliders();
     drawFractal();
-
    });
 
    function resetFractal(){
@@ -240,9 +240,9 @@ window.addEventListener("load",function(){//the code runs once all assets(html,s
     slider_lineWidth.value=lineWidth;
     label_lineWidth.innerText="lineWidth : "+Number(lineWidth);
     slider_maxLevel.value=maxLevel;
-    label_maxLevel.innerText="MaxLevel : "+maxLevel;
+    label_maxLevel.innerText="MaxLevel : "+Number(maxLevel);
     slider_branches.value=branches;
-    label_branches.innerText="Branches : "+branches;
+    label_branches.innerText="Branches : "+Number(branches);
    }
    updateSliders();//so that slider values and labels are updated on page load
 
