@@ -1,13 +1,38 @@
-*{
+body {
     background-color: black;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-#table1{
+    color: white;
+  }
+  .darkmode-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: white;
+    background-color: black;
+  }
+  .darkmode-table th,
+  .darkmode-table td {
+    padding: 8px;
+    border: 1px solid white;
+    text-align: center;
+  }
+  .darkmode-table tr:nth-child(even) {
+    background-color: #222;
+  }
+  .darkmode-table th {
+    background-color: #333;
+  }
+  .darkmode-table td {
+    font-size: 5vw;
+  }
+  .darkmode-table button {
+    color: white;
+    background-color: whitesmoke;
+    padding-top: 10px;
+    padding-right: 15px;
+    padding-bottom: 10px;
+    padding-left: 15px;
+  }
+  .darkmode-table button a {
+    padding: 3px;
+    color: black;
     background-color: gray;
-}
-#a1{
-    color: whitesmoke;
-    font-size: large;
-}
+  }
