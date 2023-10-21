@@ -101,7 +101,14 @@ class Line{
         this.history=[ { x:this.x, y:this.y } ];//set our starting x and y in the array, only 1 element in this array right now
         this.lineWidth=Math.floor(Math.random()*15+1);//set a random line width from  1 to 16, by using floor we get non decimal values
         this.hue=Math.floor(Math.random()*360);// a random hue integer value between 0 and 360
-        this.maxLength=10; //our max path segment length
+        this.maxLength=Math.floor(Math.random()*150+10); //our max path segment length
+        //adding speeds for each segment
+        //this.speedX=10;//changing speed will also adjust direction
+        //this.speedY=5;//such as if speed x=2 and speed y=15 then it will go top to bottom
+        this.speedX=Math.random()*1-0.5;//define a random speed between -0.5 and 0.5
+        this.speedY=7;
+        this.lifeSpan=this.maxLength*3;//define a timer of lifespan for each line
+        this.timer=0;//we define the timer
     }
     draw(context){// our draw function
         context.strokeStyle='hsl('+ this.hue +',100%,50%)' //define a random color for our line using HSL
@@ -124,12 +131,31 @@ class Line{
         context.stroke();
     }
     update(){ //add a new segment to our line when update is called
+        //this.x=Math.random()*canvas.width;//random x starting point based on width
+        //this.y=Math.random()*canvas.height;//random y starting point based on height
+        //this.x+=this.speedX; //causes us to move slowly
+        //this.y+=this.speedY; //causes us to move slowly
+        this.timer++;//increment our timer and animate lines if its less than the lifespan
+        if(this.timer<this.lifeSpan){
+            this.x+=this.speedX +Math.floor(Math.random()*20 -10); //causes us to move slowly
+            this.y+=this.speedY +Math.floor(Math.random()*20 -10); //causes us to move slowly
+            this.history.push({ x:this.x, y:this.y })//add this new segment to the array
+            if(this.history.length>this.maxLength){
+                this.history.shift();//removes the oldest element in our array
+            }
+        }
+        else if(this.history.length<=1){//so that atleast 1 segment of the line exists
+            this.reset();//reset it once timer is up
+        }
+        else{//remove segments once timer is up
+            this.history.shift();
+        }
+    }
+    reset(){
         this.x=Math.random()*canvas.width;//random x starting point based on width
         this.y=Math.random()*canvas.height;//random y starting point based on height
-        this.history.push({ x:this.x, y:this.y })//add this new segment to the array
-        if(this.history.length>this.maxLength){
-            this.history.shift();//removes the oldest element in our array
-        }
+        this.history=[ { x:this.x, y:this.y } ];//add our resetted value to the new array
+        this.timer=0;//we reset the timer
     }
 }
 
@@ -138,7 +164,7 @@ class Line{
 
 //make an array to store our lines
 const linesArray=[];
-const numberOfLines=3;
+const numberOfLines=100;
 for (let i=0;i<numberOfLines;i++){
     linesArray.push(new Line(canvas));//add a new line to the end of our array
 }
