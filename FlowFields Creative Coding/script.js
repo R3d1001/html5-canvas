@@ -51,6 +51,7 @@ const line1=new Line();
 line1.draw();
 */
 
+/*
 // by adding better oop practices we can pass canvas and ctx to our methods so that they are less dependant on outter variables
 
 //make a class for the lines
@@ -86,3 +87,75 @@ for (let i=0;i<numberOfLines;i++){
 //console.log(linesArray);
 //call for each built in method and draw all the lines
 linesArray.forEach(object => object.draw(ctx)); //object is used for reffering to each object inside the array, it can be replaced by any other variable name such as a=>a.draw(ctx)
+*/
+
+//by changing lines into segments and adding history of the lines in an array, we will be able to make our movement effect
+// by adding better oop practices we can pass canvas and ctx to our methods so that they are less dependant on outter variables
+
+//make a class for the lines
+class Line{
+    constructor(canvas){
+        this.canvas=canvas;
+        this.x=Math.random()*canvas.width;//random x starting point based on width
+        this.y=Math.random()*canvas.height;//random y starting point based on height
+        this.history=[ { x:this.x, y:this.y } ];//set our starting x and y in the array, only 1 element in this array right now
+        this.lineWidth=Math.floor(Math.random()*15+1);//set a random line width from  1 to 16, by using floor we get non decimal values
+        this.hue=Math.floor(Math.random()*360);// a random hue integer value between 0 and 360
+        this.maxLength=10; //our max path segment length
+    }
+    draw(context){// our draw function
+        context.strokeStyle='hsl('+ this.hue +',100%,50%)' //define a random color for our line using HSL
+        context.lineWidth=this.lineWidth;//set the line witdth to our Lines random value
+        context.beginPath();
+        context.moveTo(this.history[0].x,this.history[0].y);//our starting x y value from the array we get it at the 0th position
+        /*
+        //generate random x y values to place into the array
+        for(let i=0; i<3; i++){
+            this.x=Math.random()*canvas.width;//random x starting point based on width
+            this.y=Math.random()*canvas.height;//random y starting point based on height
+            this.history.push({ x:this.x, y:this.y })
+        }
+        */
+
+        for(let i=0; i<this.history.length; i++){
+            context.lineTo(this.history[i].x,this.history[i].y); //make a line to the ith positions x and y values
+        }
+        context.lineTo(this.endX,this.endY);//our ending x y value
+        context.stroke();
+    }
+    update(){ //add a new segment to our line when update is called
+        this.x=Math.random()*canvas.width;//random x starting point based on width
+        this.y=Math.random()*canvas.height;//random y starting point based on height
+        this.history.push({ x:this.x, y:this.y })//add this new segment to the array
+        if(this.history.length>this.maxLength){
+            this.history.shift();//removes the oldest element in our array
+        }
+    }
+}
+
+//const line1=new Line(canvas);
+//line1.draw(ctx);
+
+//make an array to store our lines
+const linesArray=[];
+const numberOfLines=3;
+for (let i=0;i<numberOfLines;i++){
+    linesArray.push(new Line(canvas));//add a new line to the end of our array
+}
+//console.log(linesArray);
+//call for each built in method and draw all the lines
+
+function animate(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    //draw line
+
+    linesArray.forEach(line => {
+        line.draw(ctx)
+        line.update()
+    }); //object is used for reffering to each object inside the array, it can be replaced by any other variable name such as a=>a.draw(ctx)
+
+    //update line
+    requestAnimationFrame(animate);//call animate parent functiona again, creates a repeating animation
+    //console.log("animating");
+}
+animate();
