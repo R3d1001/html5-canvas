@@ -1,0 +1,88 @@
+const canvas=document.getElementById('canvas1'); //get our canvas element
+const ctx=canvas.getContext('2d'); // we get our canvas context and were telling it to work with 2d contexts
+
+canvas.width=700;
+canvas.height=650;
+
+/*
+console.log(ctx); //shows our canvas settings
+//we will use begin path, close path, line to and move to methods from this
+
+ctx.beginPath();//begin making our path
+//use move to to make a sub path
+ctx.moveTo(300,300); //set starting x y coordinates
+ctx.lineTo(350,400);//set the ending x y coordinates
+ctx.lineTo(350,460);
+ctx.lineTo(450,500);
+//we will essentially have many line tos to define our path
+// and by removing the last segment from the line, causing a movement animation
+//move to and line to only define path, they dont render it
+ctx.strokeStyle='red'; //set the color of our strokes
+ctx.lineWidth=10; //set the width of our line
+ctx.lineCap="round";
+ctx.stroke();
+*/
+
+//our global settings
+ctx.lineWidth=10;
+ctx.lineCap="round";
+ctx.strokeStyle='red';
+
+/*
+//make a class for the lines
+class Line{
+    constructor(){
+        this.startX=Math.random()*canvas.width;//random x starting point based on width
+        this.startY=Math.random()*canvas.height;//random y starting point based on height
+        this.endX=Math.random()*canvas.width;//random x ending point
+        this.endY=Math.random()*canvas.height;//random y ending point
+        this.lineWidth=Math.floor(Math.random()*15+1);//set a random line width from  1 to 16, by using floor we get non decimal values
+    }
+    draw(){// our draw function
+        ctx.lineWidth=this.lineWidth;//set the line witdth to our Lines random value
+        ctx.beginPath();
+        ctx.moveTo(this.startX,this.startY);//our starting x y value
+        ctx.lineTo(this.endX,this.endY);//our ending x y value
+        ctx.stroke();
+    }
+}
+
+const line1=new Line();
+line1.draw();
+*/
+
+// by adding better oop practices we can pass canvas and ctx to our methods so that they are less dependant on outter variables
+
+//make a class for the lines
+class Line{
+    constructor(canvas){
+        this.canvas=canvas;
+        this.startX=Math.random()*canvas.width;//random x starting point based on width
+        this.startY=Math.random()*canvas.height;//random y starting point based on height
+        this.endX=Math.random()*canvas.width;//random x ending point
+        this.endY=Math.random()*canvas.height;//random y ending point
+        this.lineWidth=Math.floor(Math.random()*15+1);//set a random line width from  1 to 16, by using floor we get non decimal values
+        this.hue=Math.floor(Math.random()*360);// a random hue integer value between 0 and 360
+    }
+    draw(context){// our draw function
+        context.strokeStyle='hsl('+ this.hue +',100%,50%)' //define a random color for our line using HSL
+        context.lineWidth=this.lineWidth;//set the line witdth to our Lines random value
+        context.beginPath();
+        context.moveTo(this.startX,this.startY);//our starting x y value
+        context.lineTo(this.endX,this.endY);//our ending x y value
+        context.stroke();
+    }
+}
+
+//const line1=new Line(canvas);
+//line1.draw(ctx);
+
+//make an array to store our lines
+const linesArray=[];
+const numberOfLines=50;
+for (let i=0;i<numberOfLines;i++){
+    linesArray.push(new Line(canvas));//add a new line to the end of our array
+}
+//console.log(linesArray);
+//call for each built in method and draw all the lines
+linesArray.forEach(object => object.draw(ctx)); //object is used for reffering to each object inside the array, it can be replaced by any other variable name such as a=>a.draw(ctx)
