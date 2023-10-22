@@ -25,8 +25,41 @@ ctx.stroke();
 
 //our global settings
 ctx.lineWidth=10;
-ctx.lineCap="round";
-ctx.strokeStyle='red';
+//ctx.lineCap="round";
+/*
+const gradient1=ctx.createLinearGradient(0,0,canvas.width,canvas.height);//we create a gradient, an invisible line starting from point 0,0 to the bottom edge of our canvas, canvas.width,canvas.height
+gradient1.addColorStop('0.1','brown');
+gradient1.addColorStop('0.2','pink');
+gradient1.addColorStop('0.3','red');
+gradient1.addColorStop('0.4','orange');
+gradient1.addColorStop('0.5','yellow');
+gradient1.addColorStop('0.6','green');
+gradient1.addColorStop('0.7','turquoise');
+gradient1.addColorStop('0.8','violet');
+gradient1.addColorStop('0.9','black');
+ctx.strokeStyle=gradient1;
+
+const gradient2=ctx.createRadialGradient(canvas.width*0.5,canvas.height*0.5,30,canvas.width*0.5,canvas.height*0.5,300);//makes a radial gradient, that is a circle, were making it at the center of canvas at a circle of radius 30 to the center of canvas to an outter circle of radius 300
+gradient2.addColorStop('0.1','brown');
+gradient2.addColorStop('0.2','pink');
+gradient2.addColorStop('0.3','red');
+gradient2.addColorStop('0.4','orange');
+gradient2.addColorStop('0.5','yellow');
+gradient2.addColorStop('0.6','green');
+gradient2.addColorStop('0.7','turquoise');
+gradient2.addColorStop('0.8','violet');
+gradient2.addColorStop('0.9','black');
+ctx.strokeStyle=gradient2;
+*/
+//the canvas pattern we will use
+const patternImage=document.getElementById('patternImage');
+const pattern1=ctx.createPattern(patternImage,'no-repeat');
+ctx.strokeStyle=pattern1;
+
+//adding canvas shadows, which gives us the white cracks effect
+ctx.shadowOffsetX=2;
+ctx.shadowOffsetY=2;
+ctx.shadowColor='White'
 
 /*
 //make a class for the lines
@@ -99,7 +132,7 @@ class Line{
         this.x=Math.random()*canvas.width;//random x starting point based on width
         this.y=Math.random()*canvas.height;//random y starting point based on height
         this.history=[ { x:this.x, y:this.y } ];//set our starting x and y in the array, only 1 element in this array right now
-        this.lineWidth=Math.floor(Math.random()*15+1);//set a random line width from  1 to 16, by using floor we get non decimal values
+        this.lineWidth=Math.floor(Math.random()*25+1);//set a random line width from  1 to 16, by using floor we get non decimal values
         this.hue=Math.floor(Math.random()*360);// a random hue integer value between 0 and 360
         this.maxLength=Math.floor(Math.random()*150+10); //our max path segment length
         //adding speeds for each segment
@@ -111,7 +144,8 @@ class Line{
         this.timer=0;//we define the timer
     }
     draw(context){// our draw function
-        context.strokeStyle='hsl('+ this.hue +',100%,50%)' //define a random color for our line using HSL
+        //context.strokeStyle='hsl('+ this.hue +',100%,50%)' //define a random color for our line using HSL
+        //replaced strokeStyle from being in HSL to Gradient
         context.lineWidth=this.lineWidth;//set the line witdth to our Lines random value
         context.beginPath();
         context.moveTo(this.history[0].x,this.history[0].y);//our starting x y value from the array we get it at the 0th position
@@ -164,7 +198,7 @@ class Line{
 
 //make an array to store our lines
 const linesArray=[];
-const numberOfLines=100;
+const numberOfLines=200;
 for (let i=0;i<numberOfLines;i++){
     linesArray.push(new Line(canvas));//add a new line to the end of our array
 }
