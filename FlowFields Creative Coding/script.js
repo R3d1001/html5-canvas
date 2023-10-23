@@ -1,7 +1,7 @@
 const canvas=document.getElementById('canvas1'); //get our canvas element
 const ctx=canvas.getContext('2d'); // we get our canvas context and were telling it to work with 2d contexts
 
-canvas.width=700;
+canvas.width=610;
 canvas.height=650;
 
 /*
@@ -26,7 +26,7 @@ ctx.stroke();
 //our global settings
 ctx.lineWidth=10;
 //ctx.lineCap="round";
-/*
+
 const gradient1=ctx.createLinearGradient(0,0,canvas.width,canvas.height);//we create a gradient, an invisible line starting from point 0,0 to the bottom edge of our canvas, canvas.width,canvas.height
 gradient1.addColorStop('0.1','brown');
 gradient1.addColorStop('0.2','pink');
@@ -36,9 +36,9 @@ gradient1.addColorStop('0.5','yellow');
 gradient1.addColorStop('0.6','green');
 gradient1.addColorStop('0.7','turquoise');
 gradient1.addColorStop('0.8','violet');
-gradient1.addColorStop('0.9','black');
+gradient1.addColorStop('0.9','grey');
 ctx.strokeStyle=gradient1;
-
+/*
 const gradient2=ctx.createRadialGradient(canvas.width*0.5,canvas.height*0.5,30,canvas.width*0.5,canvas.height*0.5,300);//makes a radial gradient, that is a circle, were making it at the center of canvas at a circle of radius 30 to the center of canvas to an outter circle of radius 300
 gradient2.addColorStop('0.1','brown');
 gradient2.addColorStop('0.2','pink');
@@ -50,12 +50,12 @@ gradient2.addColorStop('0.7','turquoise');
 gradient2.addColorStop('0.8','violet');
 gradient2.addColorStop('0.9','black');
 ctx.strokeStyle=gradient2;
-*/
+
 //the canvas pattern we will use
 const patternImage=document.getElementById('patternImage');
 const pattern1=ctx.createPattern(patternImage,'no-repeat');
 ctx.strokeStyle=pattern1;
-
+*/
 //adding canvas shadows, which gives us the white cracks effect
 ctx.shadowOffsetX=2;
 ctx.shadowOffsetY=2;
@@ -132,7 +132,7 @@ class Line{
         this.x=Math.random()*canvas.width;//random x starting point based on width
         this.y=Math.random()*canvas.height;//random y starting point based on height
         this.history=[ { x:this.x, y:this.y } ];//set our starting x and y in the array, only 1 element in this array right now
-        this.lineWidth=Math.floor(Math.random()*25+1);//set a random line width from  1 to 16, by using floor we get non decimal values
+        this.lineWidth=Math.floor(Math.random()*20+1);//set a random line width from  1 to 16, by using floor we get non decimal values
         this.hue=Math.floor(Math.random()*360);// a random hue integer value between 0 and 360
         this.maxLength=Math.floor(Math.random()*150+10); //our max path segment length
         //adding speeds for each segment
@@ -142,6 +142,13 @@ class Line{
         this.speedY=7;
         this.lifeSpan=this.maxLength*3;//define a timer of lifespan for each line
         this.timer=0;//we define the timer
+        this.angle=0; //the angle, is in radians
+        //this.curve=30;// causes a curve movement based on this curve
+        this.curve=0.1;//a gradual increasing curve
+        //this.vc=0.25;//increase curve by this amount each time
+        this.vc=Math.random()*0.4-0.2;//increase curve by 0.2 to -0.2, - causes opposite motion each time, the velocity of the curve
+        this.va=Math.random()*0.5-0.25;//the velocity of angle, set to -0.25 to 0.25 affects how fast the curve spreads out
+        this.breakPoint=this.lifeSpan*0.6;//our breaking point after which va increases in our chaos statement
     }
     draw(context){// our draw function
         //context.strokeStyle='hsl('+ this.hue +',100%,50%)' //define a random color for our line using HSL
@@ -170,9 +177,29 @@ class Line{
         //this.x+=this.speedX; //causes us to move slowly
         //this.y+=this.speedY; //causes us to move slowly
         this.timer++;//increment our timer and animate lines if its less than the lifespan
+        //this.angle+=0.1//increase angle by 0.1 radians
+        this.angle+=this.va;
+        this.curve+=this.vc;
         if(this.timer<this.lifeSpan){
-            this.x+=this.speedX +Math.floor(Math.random()*20 -10); //causes us to move slowly
-            this.y+=this.speedY +Math.floor(Math.random()*20 -10); //causes us to move slowly
+            //add a function to add chaos
+            /*
+            if(this.timer>this.lifeSpan*0.6){//cause this much of its remaining lifespan to have chaos
+                this.va*=-1.12;//causes opposite motion and broken line
+
+            }
+            */
+            //optimized the code so that we dont have to calculate it multiple times
+            if(this.timer>this.breakPoint){//cause this much of its remaining lifespan to have chaos
+                this.va*=-1.12;//causes opposite motion and broken line
+
+            }
+            //this.x+=this.speedX +Math.floor(Math.random()*20 -10); //causes us to move slowly
+            //this.y+=this.speedY +Math.floor(Math.random()*20 -10); //causes us to move slowly
+            //this.x+=Math.sin(this.angle);//causes swiggly movement of the line
+            this.x+=Math.sin(this.angle)* this.curve;//causes a curved swirl movement
+            //this.y+=this.speedY;//more smoother movement
+            //this.y+=Math.sin(this.angle)* this.curve;//causes back and forth motion
+            this.y+=Math.cos(this.angle)* this.curve;//causes circular motion when combined with sin on x
             this.history.push({ x:this.x, y:this.y })//add this new segment to the array
             if(this.history.length>this.maxLength){
                 this.history.shift();//removes the oldest element in our array
@@ -190,6 +217,9 @@ class Line{
         this.y=Math.random()*canvas.height;//random y starting point based on height
         this.history=[ { x:this.x, y:this.y } ];//add our resetted value to the new array
         this.timer=0;//we reset the timer
+        this.angle=0;//reset angle
+        this.curve=0;//reset curve
+        this.va=Math.random()*0.5-0.25;//reset va so that spirals can be made once again once reset
     }
 }
 
@@ -198,7 +228,7 @@ class Line{
 
 //make an array to store our lines
 const linesArray=[];
-const numberOfLines=200;
+const numberOfLines=50;
 for (let i=0;i<numberOfLines;i++){
     linesArray.push(new Line(canvas));//add a new line to the end of our array
 }
